@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -11,7 +12,11 @@ func main() {
 	operation := getUserInputOperation()
 	numbers := getUserInputNumber()
 
-	result := operationWithNumbers(numbers, operation)
+	result, err := operationWithNumbers(numbers, operation)
+
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(result)
 }
@@ -49,26 +54,33 @@ func getUserInputNumber() string {
 	return numbers
 }
 
-func operationWithNumbers(numbers string, operation string) float64 {
+func operationWithNumbers(numbers string, operation string) (float64, error) {
 	arrNumbers := strings.Split(numbers, ",")
 	var arrForCalc []float64
 	var result float64
 
 	for _, value := range arrNumbers {
-		number, _ := strconv.ParseFloat(strings.TrimSpace(value), 64)
+		number, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+		if err != nil {
+			return 0, errors.New("Введено некорректное число")
+		}
 		arrForCalc = append(arrForCalc, number)
 	}
 
-	switch {
-	case operation == "AVG":
+	if len(arrForCalc) == 0 {
+		return 0, errors.New("Не введено чисел")
+	}
+
+	switch operation {
+	case "AVG":
 		result = calculateAvg(arrForCalc)
-	case operation == "SUM":
+	case "SUM":
 		result = calculateSum(arrForCalc)
-	case operation == "MED":
+	case "MED":
 		result = calculateMed(arrForCalc)
 	}
 
-	return result
+	return result, nil
 }
 
 func calculateAvg(numbers []float64) float64 {
@@ -92,6 +104,7 @@ func calculateSum(numbers []float64) float64 {
 
 func calculateMed(numbers []float64) float64 {
 	arrLenght := len(numbers)
+	sort.Float64s(numbers)
 
 	if arrLenght%2 == 1 {
 		return numbers[arrLenght/2]
