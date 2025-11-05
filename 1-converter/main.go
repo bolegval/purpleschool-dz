@@ -10,8 +10,10 @@ const USD_TO_EUR float64 = 0.94
 const USD_TO_RUB float64 = 92.0
 const EUR_TO_RUB float64 = 1 / USD_TO_EUR * USD_TO_RUB
 
+type Currency = map[string]map[string]float64
+
 func main() {
-	currency := map[string]map[string]float64{}
+	currency := Currency{}
 	currency["USD"] = map[string]float64{
 		"EUR": USD_TO_EUR,
 		"RUB": USD_TO_RUB,
@@ -27,10 +29,12 @@ func main() {
 		"USD": 1 / USD_TO_RUB,
 	}
 
+	fmt.Println(currency["USD"])
+
 	currencyFrom := getUserInputCurrencyFrom()
 	currencyTo := getUserInputCurrencyTo(currencyFrom)
 	number := getUserInputNumber()
-	result := calculate(number, currencyFrom, currencyTo, currency)
+	result := calculate(number, currencyFrom, currencyTo, &currency)
 
 	fmt.Println(result)
 }
@@ -127,6 +131,6 @@ func checkNumber(value string) (float64, error) {
 	return number, nil
 }
 
-func calculate(value float64, currencyFrom string, currencyTo string, currency map[string]map[string]float64) (result float64) {
-	return value * currency[currencyFrom][currencyTo]
+func calculate(value float64, currencyFrom string, currencyTo string, currency *Currency) (result float64) {
+	return value * (*currency)[currencyFrom][currencyTo]
 }
