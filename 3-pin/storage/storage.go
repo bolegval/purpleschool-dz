@@ -21,16 +21,16 @@ func saveBin(bin *bins.Bin) {
 	}
 }
 
-func readBin(fileName string) (*bins.Bin, error) {
+func readBin(fileName string) (*bins.BinList, error) {
 	data, err := file.ReadJson(fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	var bin bins.Bin
-	err = json.Unmarshal(data, &bin)
+	var binList bins.BinList
+	err = json.Unmarshal(data, &binList)
 	if err != nil {
 		return nil, err
 	}
-	return &bin, nil
+	return &binList, nil
 }
