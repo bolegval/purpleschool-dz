@@ -7,7 +7,17 @@ import (
 	"fmt"
 )
 
-func saveBin(bin *bins.Bin) {
+type StorageDb struct {
+	fileName string
+}
+
+func NewStorageDb(name string) *StorageDb {
+	return &StorageDb{
+		fileName: name,
+	}
+}
+
+func (db *StorageDb) SaveBin(bin *bins.Bin) {
 	data, err := json.Marshal(bin)
 
 	if err != nil {
@@ -15,14 +25,14 @@ func saveBin(bin *bins.Bin) {
 		return
 	}
 
-	err = file.WriteJson(data, "data.json")
+	err = file.WriteJson(data, db.fileName)
 	if err != nil {
 		return
 	}
 }
 
-func readBin(fileName string) (*bins.BinList, error) {
-	data, err := file.ReadJson(fileName)
+func (db *StorageDb) ReadBin() (*bins.BinList, error) {
+	data, err := file.ReadJson(db.fileName)
 	if err != nil {
 		return nil, err
 	}

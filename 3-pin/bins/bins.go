@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type Db interface {
+	SaveBin(bin *Bin)
+	ReadBin() (*BinList, error)
+}
+
 type Bin struct {
 	Id        string    `json:"id"`
 	Private   bool      `json:"private"`
@@ -42,5 +47,25 @@ func NewBinList(bin *Bin) *BinList {
 	bins = append(bins, *bin)
 	return &BinList{
 		Bins: bins,
+	}
+}
+
+type BinListWithDb struct {
+	BinList *BinList `json:"bin_list"`
+	db      Db
+}
+
+func NewBinListWithDb(db Db) *BinListWithDb {
+	bins, _err := db.ReadBin()
+	if _err != nil {
+		return &BinListWithDb{
+			BinList: bins,
+			db:      db,
+		}
+	}
+
+	return &BinListWithDb{
+		BinList: NewBinList(&Bin{}),
+		db:      db,
 	}
 }
