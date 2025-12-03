@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+var variantOperation = map[string]func(numbers []float64) float64{
+	"AVG": calculateAvg,
+	"SUM": calculateSum,
+	"MED": calculateMed,
+}
+
 func main() {
 	operation := getUserInputOperation()
 	numbers := getUserInputNumber()
@@ -38,8 +44,8 @@ func getUserInputOperation() string {
 	}
 }
 
-func checkOperation(operaition string) (bool, error) {
-	if strings.ToUpper(operaition) == "AVG" || strings.ToUpper(operaition) == "SUM" || strings.ToUpper(operaition) == "MED" {
+func checkOperation(operation string) (bool, error) {
+	if strings.ToUpper(operation) == "AVG" || strings.ToUpper(operation) == "SUM" || strings.ToUpper(operation) == "MED" {
 		return true, nil
 	}
 
@@ -57,7 +63,6 @@ func getUserInputNumber() string {
 func operationWithNumbers(numbers string, operation string) (float64, error) {
 	arrNumbers := strings.Split(numbers, ",")
 	var arrForCalc []float64
-	var result float64
 
 	for _, value := range arrNumbers {
 		number, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
@@ -71,16 +76,7 @@ func operationWithNumbers(numbers string, operation string) (float64, error) {
 		return 0, errors.New("Не введено чисел")
 	}
 
-	switch operation {
-	case "AVG":
-		result = calculateAvg(arrForCalc)
-	case "SUM":
-		result = calculateSum(arrForCalc)
-	case "MED":
-		result = calculateMed(arrForCalc)
-	}
-
-	return result, nil
+	return variantOperation[operation](arrForCalc), nil
 }
 
 func calculateAvg(numbers []float64) float64 {
